@@ -9,7 +9,7 @@ data = read_data(spots)
 data = np.array([list(row) for row in data])
 
 
-def a():
+def a_1_2():
     n_runs = 20
     train_mse = 0
     test_mse = 0
@@ -43,7 +43,7 @@ def a():
     return train_mse, test_mse
 
 
-def c():
+def c_1_2():
     n_atrr = 12
     train_mse_for_atrrs = []
     test_mse_for_attrs = []
@@ -84,7 +84,7 @@ def c():
     return np.array(train_mse_for_atrrs), np.array(test_mse_for_attrs)
 
 
-def d():
+def d_1_2():
     n_runs = 20
     train_mse = 0
     test_mse = 0
@@ -120,6 +120,6 @@ def d():
 
 
 if __name__ == "__main__":
-    print(a())
-    print(c())
-    print(d())
+    print(a_1_2())
+    print(c_1_2())
+    print(d_1_2())
