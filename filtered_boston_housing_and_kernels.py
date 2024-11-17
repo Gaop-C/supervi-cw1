@@ -11,8 +11,8 @@ data = np.array([list(row) for row in data])
 
 def a_1_2():
     n_runs = 20
-    train_mse = 0
-    test_mse = 0
+    list_train_mse = []
+    list_test_mse = []
     for _ in range(n_runs):
         data_size = len(data)
         indices = np.arange(data_size)
@@ -34,23 +34,25 @@ def a_1_2():
         model.train(X_train, Y_train)
         predict_train = model.predict(X_train)
         predict_test = model.predict(X_test)
-        train_mse += mse(Y_train, predict_train)
-        test_mse += mse(Y_test, predict_test)
-        print((model.W, sum(Y_train) / len(Y_train)))
+        list_train_mse.append(mse(Y_train, predict_train))
+        list_test_mse.append(mse(Y_test, predict_test))
+        # print((model.W, sum(Y_train) / len(Y_train)))
 
-    train_mse = train_mse / n_runs
-    test_mse = test_mse / n_runs
-    return train_mse, test_mse
+    train_mse, train_std = np.mean(list_train_mse), np.std(list_train_mse)
+    test_mse, test_std = np.mean(list_test_mse), np.std(list_train_mse)
+    return train_mse, train_std, test_mse, test_std
 
 
 def c_1_2():
     n_atrr = 12
     train_mse_for_atrrs = []
     test_mse_for_attrs = []
+    train_std_for_atrrs = []
+    test_std_for_attrs = []
     for i in range(n_atrr):
         n_runs = 20
-        train_mse = 0
-        test_mse = 0
+        list_train_mse = []
+        list_test_mse = []
         for _ in range(n_runs):
             data_size = len(data)
             indices = np.arange(data_size)
@@ -74,20 +76,22 @@ def c_1_2():
             model.train(X_train, Y_train)
             predict_train = model.predict(X_train)
             predict_test = model.predict(X_test)
-            train_mse += mse(Y_train, predict_train)
-            test_mse += mse(Y_test, predict_test)
+            list_train_mse.append(mse(Y_train, predict_train))
+            list_test_mse.append(mse(Y_test, predict_test))
 
-        train_mse = train_mse / n_runs
-        test_mse = test_mse / n_runs
+        train_mse, train_std = np.mean(list_train_mse), np.std(list_train_mse)
+        test_mse, test_std = np.mean(list_test_mse), np.std(list_train_mse)
         train_mse_for_atrrs.append(train_mse)
+        train_std_for_atrrs.append(train_std)
         test_mse_for_attrs.append(test_mse)
-    return np.array(train_mse_for_atrrs), np.array(test_mse_for_attrs)
+        test_std_for_attrs.append(test_std)
+    return np.array(train_mse_for_atrrs), np.array(train_std_for_atrrs), np.array(test_mse_for_attrs), np.array(test_std_for_attrs)
 
 
 def d_1_2():
     n_runs = 20
-    train_mse = 0
-    test_mse = 0
+    list_train_mse = []
+    list_test_mse = []
     for _ in range(n_runs):
         data_size = len(data)
         indices = np.arange(data_size)
@@ -111,12 +115,12 @@ def d_1_2():
         model.train(X_train, Y_train)
         predict_train = model.predict(X_train)
         predict_test = model.predict(X_test)
-        train_mse += mse(Y_train, predict_train)
-        test_mse += mse(Y_test, predict_test)
+        list_train_mse.append(mse(Y_train, predict_train))
+        list_test_mse.append(mse(Y_test, predict_test))
 
-    train_mse = train_mse / n_runs
-    test_mse = test_mse / n_runs
-    return train_mse, test_mse
+    train_mse, train_std = np.mean(list_train_mse), np.std(list_train_mse)
+    test_mse, test_std = np.mean(list_test_mse), np.std(list_train_mse)
+    return train_mse, train_std, test_mse, test_std
 
 
 if __name__ == "__main__":

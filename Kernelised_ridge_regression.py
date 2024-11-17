@@ -6,6 +6,7 @@ from linear_regressions import mse
 import requests
 from utilities import read_data
 from filtered_boston_housing_and_kernels import a_1_2, c_1_2, d_1_2
+import pandas as pd
 
 spots = requests.get(
     'http://www0.cs.ucl.ac.uk/staff/M.Herbster/boston-filter/Boston-filtered.csv', stream=True)
@@ -194,8 +195,8 @@ def a_1_3():
 
 
 def c_1_3(n_runs):
-    train_mse = 0
-    test_mse = 0
+    list_train_mse = []
+    list_test_mse = []
     for _ in range(n_runs):
         data_size = len(data)
         indices = np.arange(data_size)
@@ -217,20 +218,53 @@ def c_1_3(n_runs):
         model.train(X_train, Y_train, best_gamma, sig=best_sigma)
         predict_train = model.predict(X_train, X_train, sig=best_sigma)
         predict_test = model.predict(X_test, X_train, sig=best_sigma)
-        train_mse += mse(Y_train, predict_train)
-        test_mse += mse(Y_test, predict_test)
+        list_train_mse.append(mse(Y_train, predict_train))
+        list_test_mse.append(mse(Y_test, predict_test))
 
-    train_mse = train_mse / n_runs
-    test_mse = test_mse / n_runs
-    return train_mse, test_mse
+    train_mse, train_std = np.mean(list_train_mse), np.std(list_train_mse)
+    test_mse, test_std = np.mean(list_test_mse), np.std(list_train_mse)
+    return train_mse, train_std, test_mse, test_std
 
 
 def d_1_3(n_runs):
-    c_1_3(n_runs)
-    a_1_2()
-    c_1_2()
-    d_1_2()
- 
+    NR_train_mse, NR_train_std, NR_test_mse, NR_test_std = a_1_2()
+    train_mse_for_atrrs, train_std_for_atrrs, test_mse_for_attrs, test_std_for_attrs = c_1_2()
+    FA_train_mse, FA_train_std, FA_test_mse, FA_test_std = d_1_2()
+    KN_train_mse, KN_train_std, KN_test_mse, KN_test_std = c_1_3(n_runs)
+    list_train_mse = np.concatenate(
+        ([NR_train_mse], train_mse_for_atrrs, [FA_train_mse], [KN_train_mse]))
+    list_train_std = np.concatenate(
+        ([NR_train_std], train_std_for_atrrs, [FA_train_std], [KN_train_mse]))
+    list_test_mse = np.concatenate(
+        ([NR_test_mse], test_mse_for_attrs, [FA_test_mse], [KN_train_mse]))
+    list_test_std = np.concatenate(
+        ([NR_test_std], test_mse_for_attrs, [FA_test_std], [KN_train_mse]))
+    list_method_name = np.concatenate((['Naive Regression'], [f'Linear Regression (attribute{
+                                      i})' for i in range(1, 13)], ['Linear Regression (all attributes)'], ['Kernel Ridge Regression']))
+    # Put them into a dictionary whose keys are the column names
+    data = {
+        'Method': list_method_name,
+        'train_mse': list_train_mse,
+        'train_std': list_train_std,
+        'test_mse': list_test_mse,
+        'test_std': list_test_std
+    }
+    df = pd.DataFrame(data)
+    # create new columns
+    df['MSE train'] = df.apply(lambda row: f"{row['train_mse']} ± {
+                               row['train_std']}", axis=1)
+    df['MSE test'] = df.apply(lambda row: f"{row['test_mse']} ± {
+                              row['test_std']}", axis=1)
+    # Delete column
+    df = df.drop(columns="train_mse")
+    df = df.drop(columns="train_std")
+    df = df.drop(columns="test_mse")
+    df = df.drop(columns="test_std")
+
+    print(df)
+
+
 if __name__ == "__main__":
-    a_1_3()
-    c_1_3(1)
+    # a_1_3()
+    # c_1_3(1)
+    d_1_3(20)
