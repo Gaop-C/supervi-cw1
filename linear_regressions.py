@@ -151,10 +151,10 @@ if __name__ == "__main__":
     list_degree = [1, 2, 3, 4]
     X_test = np.linspace(0, 5, 100).reshape(-1, 1)
     line_patterns = ['b-', 'g-', 'r-', 'y-']
-    print(mse_by_diff_models(
-        X_train, Y_train, list_degree, X_train, Y_train, "polynomial"))
     plot_predict_by_diff_models(X_train, Y_train, list_degree, X_test, "polynomial",
                                 line_patterns, 1, 2, 0.2, 0.5, 0, 4, -2, 6)
+    print(mse_by_diff_models(
+        X_train, Y_train, list_degree, X_train, Y_train, "polynomial"))
 
     mean = 0
     std = 0.07
